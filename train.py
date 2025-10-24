@@ -1,10 +1,4 @@
 # %%
-C = 1.0 
-n_splits = 5
-output_file = f'model_C={C}.bin'
-
-
-# %%
 import pickle 
 
 import pandas as pd
@@ -18,7 +12,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 
 # %%
-# Load model from Weeks 3/4 
+C = 1.0 
+n_splits = 5
+output_file = f'model_C={C}.bin'
+
+# %%  Load model from Weeks 3/4 
 df = pd.read_csv("course_lead_scoring.csv")
 
 cat_features = list(df.dtypes[df.dtypes == 'object'].index)
@@ -33,10 +31,6 @@ for col in cat_features:
 
 for col in num_features:
     df[col] = df[col].fillna(0)
-
-
-# df.isnull().sum()
-
 
 # %%
 df_full_train, df_test = train_test_split(df, test_size=0.2, random_state=1)
@@ -98,7 +92,7 @@ for train_idx, val_idx in kfold.split(df_full_train):
     auc = roc_auc_score(y_val, y_pred)
     scores.append(auc)
 
-    print('AUC on fold {fold} is {auc}')
+    print(f'AUC on fold {fold} is {auc:.3f}')
     fold = fold + 1
 
 
@@ -113,11 +107,10 @@ y_pred = predict(df_test, dv, model)
 y_test = df_test.converted.values
 auc = roc_auc_score(y_test, y_pred)
 
-print(f'AUC: {auc}')
+print(f"AUC: {auc:.3f}")
 
 # %%
 with open(output_file, 'wb') as f_out:
     pickle.dump((dv, model), f_out)  # do stuff
 
 print(f'\nthe output is saved to this {output_file}')
-    
